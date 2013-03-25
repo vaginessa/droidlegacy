@@ -1,3 +1,4 @@
+#!/bin/bash
 dirList=`ls disassembled/ | grep '.out'`;
 for dirName in $dirList;
 do
