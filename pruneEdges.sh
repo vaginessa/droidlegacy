@@ -6,7 +6,10 @@ apks=`ls disassembled/`
 for apk in $apks
 do
 	#The top of the csv must contain Source,Target,Weight to work with Gephi
-	pruned="Source,Target,Weight\n"
+
+	#This line is only used if we are producing data for Gephi
+	#pruned="Source,Target,Weight\n"
+
 	#extract the names of each class in the apk in a format comparable to what's used as Source in edges
 	classes=`find disassembled/$apk/smali/ -type f | sed s/"[^\/]*\/[^\/]*\/[^\/]*\/"// | sed s/.smali//`
 	#replace .out with .classes in the apk name
