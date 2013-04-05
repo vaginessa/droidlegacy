@@ -3,14 +3,16 @@
 import numpy
 #sys is used to handle command line arguments
 import sys
+import copy
 
 np=numpy
 inputFile = sys.argv[1]
+#inputFile = "/home/lad9344/Android_Malware_Classifier/ADRD Test/pdg/ADRD-100.e.csv"
 #the threshold determines when to stop mergin classes.
 #If there are no class relationships above 5 then stop combining classes.
 threshold = 5
 
-#converts edge list to a dependenct matrix
+#converts edge list to a dependence matrix
 def edge2Matrix(inputFile):
 	edgeData=open(inputFile).read().strip()
 	edgeList=edgeData.split("\n")
@@ -41,7 +43,7 @@ def edge2Matrix(inputFile):
 		source,target,weight=edge
 		row=moduleList.index(source)
 		col=moduleList.index(target)
-		depMatrix[row][col]=weight
+		depMatrix[row][col]=int(weight)
 	
 	#adding the transpose makes the directed dependence graph into and undirected one.
 	depMatrix=depMatrix + np.transpose(depMatrix)
@@ -67,30 +69,46 @@ def clusterMatrix(depMatrix,moduleList,threshold):
 		maxSource=np.where(depMatrix==maxDependence)[0][0]
 		maxTarget=np.where(depMatrix==maxDependence)[1][0]
 
-		#axis represents the dimension (row or column).
-		#axis 0 is rows, axis 1 is columns
-		#This line deletes the source row where the maximum similarity was found
-		nextdepMatrix=numpy.delete(depMatrix, (maxSource), axis=0)
-		
-		col1=nextdepMatrix[:,maxSource]
-		col2=nextdepMatrix[:,maxTarget]
+		if depMatrix[maxSource][maxTarget] != maxDependence:
+			print "We have a problem!"
+			break
+
+		#combine the modules in the list of classes
+		#keep the source remove the target
+		moduleList[maxSource]=moduleList[maxTarget]+moduleList[maxSource]
+		del moduleList[maxTarget]
+
+		col1=depMatrix[:,maxSource]
+		col2=depMatrix[:,maxTarget]
+
+		row1=depMatrix[maxSource,:]
+		row2=depMatrix[maxTarget,:]
 
 		#adding these two columns combines the edges associated with the modules being combined
 		#if A and B are combined and A,C,2 and B,C,2 then AB,C,4
-		nextdepMatrix[:,maxTarget]=col1+col2
+
+		#print depMatrix
+
+		depMatrix[:,maxSource]=col1+col2
+		depMatrix[maxSource,:]=row1+row2
+
+		#print depMatrix
 		
-		#This line deletes the source column where the maximum similarity was found
-		nextdepMatrix=numpy.delete(nextdepMatrix, (maxSource), axis=1)
-		
-		#combine the modules in the list of classes
-		moduleList[maxTarget]=moduleList[maxTarget]+moduleList[maxSource]
-		del moduleList[maxSource]
+		#This line deletes the target column where the maximum similarity was found
+		depMatrix=numpy.delete(depMatrix, (maxTarget), axis=1)
+
+		#axis represents the dimension (row or column).
+		#axis 0 is rows, axis 1 is columns
+		#This line deletes the source row where the maximum similarity was found
+		depMatrix=numpy.delete(depMatrix, (maxTarget), axis=0)
+
+		#print depMatrix
 		
 		#keep making sure the dependence of a class on itself is 0
-		for i in range(nextdepMatrix.shape[0]):
-			nextdepMatrix[i,i]=0
+		for i in range(depMatrix.shape[0]):
+			depMatrix[i,i]=0
 
-		depMatrix=nextdepMatrix		
+		#print depMatrix
 
 	printModules(moduleList)
 
@@ -115,6 +133,7 @@ def printMatrix(depMatrix):
 
 #This is my attempt to look professional by using functions
 depMatrix,moduleList = edge2Matrix(inputFile)
+#printMatrix(depMatrix)
 clusterMatrix(depMatrix, moduleList, threshold)
 
 

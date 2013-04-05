@@ -26,7 +26,7 @@ def aggEdges(inputFile,classListFile):
 		source,target,weight=edge
 		weight = int(weight)
 		#make sure the classes involved are actually in the APK
-		if source in classList and target in classList:
+		if target in classList:
 			#check if source and target are already in dictionary
 			#If source is in the dictionary
 			if edgeDictionary.has_key(source):
