@@ -12,4 +12,3 @@ do
 	#Run apktool on the apk.  This should put the output in disassembled/
 	apktool d ../$apkName;
 done;
-cd ../..

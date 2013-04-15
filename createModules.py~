@@ -119,7 +119,7 @@ def printModules(moduleList):
 			if c == len(module) - 1:
 				print module[c]
 			else:
-				sys.stdout.write(module[c]+',')
+				sys.stdout.write(module[c])
 
 #outputs the matrix in a simple format with one row per line.
 def printMatrix(depMatrix):

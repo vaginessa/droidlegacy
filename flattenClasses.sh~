@@ -4,11 +4,11 @@
 #operations on all classes in an apk.
 
 #List all files in dirList that have the .out extension
-dirList=`ls data/disassembled/ | grep '.out'`;
+dirList=`ls disassembled/ | grep '.out'`;
 for dirName in $dirList;
 do
 	#use find to list all the classes in the current apk
-	classes=`find data/disassembled/$dirName/smali/ -type f`
+	classes=`find disassembled/$dirName/smali/ -type f`
 	for class in $classes
 	do
 		#Replace the .out extension with .classes for the name of the directory holding an apk's classes
@@ -17,6 +17,6 @@ do
 		#For example com/xxx/yyy/adad become com.xxx.yyy.adad
 		name=`echo $class | sed s/"[^\/]*\/[^\/]*\/[^\/]*\/"// | sed s/.smali// | sed s/"\/"/"\."/g`
 		#Copy the class into the flattened directory with its new name.		
-		cp $class data/flatClasses/$classDirName/$name;
+		cp $class flatClasses/$classDirName/$name;
 	done;
 done;

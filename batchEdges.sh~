@@ -17,7 +17,7 @@ do
 	for class in $classes
 	do
 		#Run generateEdges for each class and accumulate the output in the .raw file
-		./scripts/generateEdges.sh $apk $class | grep "." >> data/pdg/$rawEdgeFile
+		./scripts/generateEdges.sh $apk $class | grep "." >> pdg/$rawEdgeFile
 	done
 done
 

@@ -11,14 +11,14 @@ targetClass=$2
 
 #The following values are easy to extract because of the syntax used in smali.
 #extract the name of the class being analyzed and use it as the Source for its edges
-source=`grep "\.class " data/flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
+source=`grep "\.class " flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
 #figure out which class this one inherits.  It might just inherit the default Java object class
-inherit=`grep "\.super " data/flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
+inherit=`grep "\.super " flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
 
 #extract method calls
-methodDests=`grep -sho "\ "[^"\ "]*";->.*(" data/flatClasses/$targetApk/$targetClass | sed s/" L"// | sed s/";->.*"//`
+methodDests=`grep -sho "\ "[^"\ "]*";->.*(" flatClasses/$targetApk/$targetClass | sed s/" L"// | sed s/";->.*"//`
 #extract field calls
-fieldDests=`grep -sho "\ "[^"\ "]*";->.*:" data/flatClasses/$targetApk/$targetClass | sed s/" L"// | sed s/";->.*"//`
+fieldDests=`grep -sho "\ "[^"\ "]*";->.*:" flatClasses/$targetApk/$targetClass | sed s/" L"// | sed s/";->.*"//`
 
 #Ignore classes that inherit java/lang/Object.  This is not a class we are interested in links to.
 if [ $inherit != "java/lang/Object" ]
