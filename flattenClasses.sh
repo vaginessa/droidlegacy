@@ -15,7 +15,7 @@ do
 		classDirName=`echo $dirName| sed s/.out/.classes/`;
 		#Create a name for each class based on its package hierarchy.  Dots seperate each level.
 		#For example com/xxx/yyy/adad become com.xxx.yyy.adad
-		name=`echo $class | sed s/"[^\/]*\/[^\/]*\/[^\/]*\/"// | sed s/.smali// | sed s/"\/"/"\."/g`
+		name=`echo $class | sed s/"[^\/]*\/[^\/]*\/[^\/]*\/"// | sed s/"smali\/"// | sed s/"\.smali"// | sed s/"\/"/"\."/g`
 		#Copy the class into the flattened directory with its new name.		
 		cp $class data/flatClasses/$classDirName/$name;
 	done;

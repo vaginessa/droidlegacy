@@ -10,6 +10,6 @@ cd data/disassembled;
 for apkName in $apkList;
 do
 	#Run apktool on the apk.  This should put the output in disassembled/
-	apktool d ../$apkName;
+	apktool d ../../$apkName;
 done;
 cd ../..

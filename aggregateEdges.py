@@ -14,7 +14,6 @@ def aggEdges(inputFile,classListFile):
 	#create a list of classes in the APK
 	classData=open(classListFile).read().strip()
 	classList=classData.split("\n")
-	
 	#extract edges from inputFile
 	edgeData=open(inputFile).read().strip()
 	edgeList=edgeData.split("\n")

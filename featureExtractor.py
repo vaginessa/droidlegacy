@@ -32,9 +32,9 @@ for file in os.listdir("data/modules"):
 			classData = open(prefix+className).read()
 			#look for all ".*, Landroid/.*;->.*\n
 			#the weird symbols at the end of the line shouldn't hurt anything
-			apiCalls = re.findall(', Landroid/.*;->',classData)
-			apiCalls = [x.replace(", Landroid/","") for x in apiCalls]
-			apiCalls = [x.replace(";->","") for x in apiCalls]
+			apiCalls = re.findall(', Landroid/.*;->.*',classData)
+			apiCalls = [x.replace(", L","") for x in apiCalls]
+			#apiCalls = [x.replace(";->","") for x in apiCalls]
 			apiCalls = set(apiCalls)
 			#start unioning the results of patternmatching
 			featureSet = featureSet.union(apiCalls)
