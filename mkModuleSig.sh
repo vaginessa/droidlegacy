@@ -8,4 +8,4 @@
 ./scripts/listClasses.sh
 ./scripts/batchEdges.sh
 ./scripts/runCreateModules.sh
-./scripts/featureExtractor.py > featureMatrix.csv
+./scripts/featureExtractor.py
