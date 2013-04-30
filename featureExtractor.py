@@ -140,10 +140,16 @@ def detectSignatures():
 				similarityScore = calcSimilarity(moduleDict['featureSet'],signature)
 				if similarityScore >= detectionThreshold:
 					print "match detected in "+apkName+" for malware family: "+familyName
-					print "classes involved are: " + str(moduleDict['classList'])
+					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+					print "classes involved are: " 
+					print str(moduleDict['classList'])
+					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 					print "similarity score of "+str(similarityScore)
+					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+					print "signature features are"					
 					for f in signature:
 						print f
+					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 				 
 
 #main
