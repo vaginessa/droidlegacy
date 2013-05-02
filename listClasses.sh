@@ -8,6 +8,7 @@ for dirName in $dirList;
 do
 	#use find to list all the classes in the current apk
 	classes=`ls data/flatClasses/$dirName | grep "." | sed s/"\."/"\/"/g`
+	classList=''
 	for class in $classes
 	do
 		classList="$classList$class\n"

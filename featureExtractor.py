@@ -7,9 +7,9 @@ import re
 import sys
 import os
 import ast
+import Image
 
 #I have no idea what these thresholds should actually be.
-detectionThreshold = .8
 signatureThreshold = .5
 mode = sys.argv[1]
 
@@ -133,24 +133,97 @@ def detectSignatures():
 		familyName = re.search('[^\.]*',file).group(0)
 		familySigDict.update({familyName:signature})
 
+	matchDict = {} #maps apks to their matchDict
+	for familyName in familySigDict.keys():
+		matchDict.update({familyName:{}})
+
 	for (apkName,apkDict) in batchDictionary.items():
-		for (moduleName,moduleDict) in apkDict.items():
-			for (familyName, signature) in familySigDict.items():
-				#I only need to do something if the signature or something close to it is detected
+		family = re.search('[^-]*',apkName).group(0)
+		matchDict[family].update({apkName:{}}) #maps apks to max matches of modules for each signature.
+		for (familyName, signature) in familySigDict.items():
+			moduleScoreList = []
+			for (moduleName,moduleDict) in apkDict.items():
+				#I need to find the highest scoring module for this signature and add it to the dictionary
 				similarityScore = calcSimilarity(moduleDict['featureSet'],signature)
-				if similarityScore >= detectionThreshold:
-					print "match detected in "+apkName+" for malware family: "+familyName
-					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-					print "classes involved are: " 
-					print str(moduleDict['classList'])
-					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-					print "similarity score of "+str(similarityScore)
-					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-					print "signature features are"					
-					for f in signature:
-						print f
-					print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+				moduleScoreList.append(similarityScore)
+			maxModuleScore = max(moduleScoreList)
+			matchDict[family][apkName].update({familyName:maxModuleScore})
+	visualizeResults(matchDict,familySigDict)
 				 
+def createColorList(falseColor):
+	colorList = []
+	granularity = 4
+	for r in range(granularity):
+		for g in range(granularity):
+			for b in range(granularity):
+				maxColor = float(max([r,g,b]))
+				if maxColor != 0:
+					color = (r/maxColor,g/maxColor,b/maxColor)
+					colorList.append(color)
+	print len(colorList)
+	colorList = list(set(colorList))
+	colorList.remove(falseColor)
+	print len(colorList)
+	return colorList
+
+def brightness(score, color):
+	colorScores = map (lambda c : int(c * score * 256), color)
+	return colorScores
+
+#creates an apk to signature matrix that should provide an intuitive
+#evaluation of our results.  We will need to tweak parameters until
+#this program outputs a matrix with publishable results.
+def visualizeResults(resultDict,familySigDict):
+	#print header
+	header = ""
+	header += "apk,"
+	for familyName in sorted(familySigDict.keys()):
+		for apk in (resultDict[familyName].keys()):		
+			header += familyName+","
+	header = header [:-1]
+
+	#print data and produce image for evaluation
+
+	falseColor = (1.0,0.0,0.0)
+	colorList = createColorList(falseColor)
+
+	print colorList
+	imageMatrix = []
+
+	csvString = header + "\n"
+	for (apkFamily,familyDict) in sorted(resultDict.items(),key=(lambda (name,dict): name)):
+		familyNumber = sorted(resultDict.keys()).index(apkFamily)
+		for (apkName,apkDict) in sorted(familyDict.items(),key=(lambda (name,dict): name)):
+			csvString += apkName + ","
+			imageRow = []
+			for (sigFamily,score) in sorted(apkDict.items(),key=(lambda (name,score): name)):
+				for apk in (resultDict[sigFamily].keys()):
+					if sigFamily==apkFamily:
+						csvString += str(score) + ","
+						imageRow.append(brightness(score,colorList[familyNumber]))
+					else: #remember to dedicate a color to false positives such as red or white
+						csvString += str(score) + ","
+						imageRow.append(brightness(score,falseColor))
+			csvString = csvString[:-1] + "\n"
+			imageMatrix.append(imageRow)			
+
+	#create image with imageMatrix
+	size = (len(imageMatrix),len(imageMatrix[0]))
+	simImage = Image.new('RGB', size)
+	for row in range(len(imageMatrix)):
+		for col in range(len(imageMatrix[row])):
+			(r,g,b) = (imageMatrix[row][col])
+			simImage.putpixel((col,row), (r,g,b))
+	simImage = simImage.resize((512,512))
+	simImage.save('myImage.png','PNG')
+
+	#output csv
+	sigSimMatrix = open("sigSimMatrix.csv",'w')
+	sigSimMatrix.write(csvString)
+
+	#TODO output csvString to a file
+	#TODO make colorful visualization of matrix
+	#TODO there is a problem in the replication that should make the matrix square
 
 #main
 if mode == "genSig":
