@@ -11,7 +11,10 @@ targetClass=$2
 
 #The following values are easy to extract because of the syntax used in smali.
 #extract the name of the class being analyzed and use it as the Source for its edges
-source=`grep "\.class " data/flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
+
+#the source should be found in the first line
+source=`head -1 data/flatClasses/$targetApk/$targetClass | grep "\.class " | sed s/.*"\ L"// | sed s/";"//`
+
 #figure out which class this one inherits.  It might just inherit the default Java object class
 inherit=`grep "\.super " data/flatClasses/$targetApk/$targetClass | sed s/.*"\ L"// | sed s/";"//`
 

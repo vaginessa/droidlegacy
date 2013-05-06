@@ -10,7 +10,7 @@ inputFile = sys.argv[1]
 #inputFile = "/home/lad9344/Android_Malware_Classifier/ADRD Test/pdg/ADRD-100.e.csv"
 #the threshold determines when to stop mergin classes.
 #If there are no class relationships above 5 then stop combining classes.
-threshold = 5
+threshold = 1
 
 #converts edge list to a dependence matrix
 def edge2Matrix(inputFile):

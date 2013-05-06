@@ -5,7 +5,6 @@
 import os
 import re
 import sys
-import os
 import ast
 import Image
 
