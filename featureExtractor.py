@@ -78,6 +78,7 @@ def generateSignatures():
 			collection.update({familyName:[file]})
 
 	for family in collection:
+		print "Generate Signature: " + family
 		#create dictionary mapping apks to modules to features
 		"for each apk"
 		familyDict = extractFeatures(collection[family])
@@ -111,8 +112,10 @@ def generateSignatures():
 					signatureScores[f] += 1
 				else: 
 					signatureScores.update({f:1})
+		#normalize scores by dividing all of them by the maximum score instead of the average.  Then use the threshold.
+		maxSigScore = float(max(signatureScores.values()))
 		for f in signatureScores:
-			signatureScores[f] /= len(maxScoreSets)
+			signatureScores[f] /= maxSigScore
 			if signatureScores[f] >= signatureThreshold:
 				signatureSet = signatureSet.union(set([f]))
 			

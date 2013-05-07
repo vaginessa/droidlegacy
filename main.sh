@@ -36,13 +36,24 @@ fi
 if [ "$mode" == "test" ] || [ "$mode" == "all" ]
 then
 	#detect signatures in test set
+	echo "cleaning"
 	./scripts/clean.sh
+	echo "moving to data/apk/"
 	cp testingSet/* data/apk/
+	echo "disassembling"
 	./scripts/batchDisassemble.sh
+	echo "making class directories"
 	./scripts/makeClassDirs.sh
+	echo "flattening classes"
 	./scripts/flattenClasses.sh
+	echo "listing classes"
 	./scripts/listClasses.sh
+	echo "creating edges"
 	./scripts/batchEdges.sh
+	echo "creating modules"
 	./scripts/runCreateModules.sh
-	./scripts/featureExtractor.py "detectSig" > detectionResults.txt
+	echo "detecting signatures"
+	./scripts/featureExtractor.py "detectSig"
 fi
+
+cp *.png ~/Dropbox/
