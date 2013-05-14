@@ -6,3 +6,5 @@ It may have been cleaner to do all of this in Python, but it sort of evolved thi
 
 To run the experiment run ./scripts/main.sh
 
+Alec waz heer!
+

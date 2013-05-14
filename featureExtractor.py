@@ -35,7 +35,7 @@ def extractFeatures(apkList):
 	for file in apkList:
 		apkName = re.search('[^\.]*',file).group(0)
 		batchDict.update({apkName:{}})
-		apkData = open("data/modules/"+file).read().strip()
+		apkData = open("data/experimentData/modules/"+file).read().strip()
 		modules = apkData.split("\n")
 
 		for m in range(len(modules)):
@@ -70,7 +70,7 @@ def extractFeatures(apkList):
 def generateSignatures():
 	#collection maps a family to apk's that belong to that family
 	collection = {}
-	for file in os.listdir("data/modules"):
+	for file in os.listdir("data/experimentData/modules"):
 		familyName = re.search('[^-]*',file).group(0)
 		if familyName in collection:
 			collection[familyName].append(file)
@@ -125,7 +125,7 @@ def generateSignatures():
 
 #given a group of apks look for the presence of a malware family's signature in any of them
 def detectSignatures():
-	fileList = os.listdir("data/modules")
+	fileList = os.listdir("data/experimentData/modules")
 	batchDictionary = extractFeatures(fileList)
 	#make a dictionary for malicious signatures
 	familySigDict = {}
@@ -137,7 +137,7 @@ def detectSignatures():
 
 	matchDict = {} #maps apks to their matchDict
 	for familyName in familySigDict.keys():
-		matchDict.update({familyName:{}})
+		matchDict.update({familyName:{}})		
 
 	for (apkName,apkDict) in batchDictionary.items():
 		family = re.search('[^-]*',apkName).group(0)
@@ -151,7 +151,10 @@ def detectSignatures():
 			maxModuleScore = max(moduleScoreList)
 			matchDict[family][apkName].update({familyName:maxModuleScore})
 	visualizeResults(matchDict,familySigDict)
+	calculateAverages(matchDict,familySigDict)
 				 
+#TODO calculate intra and inter class similarity averages.
+
 def createColorList(falseColor):
 	colorList = []
 	granularity = 4
@@ -171,6 +174,84 @@ def createColorList(falseColor):
 def brightness(score, color):
 	colorScores = map (lambda c : int(c * score * 256), color)
 	return colorScores
+
+def calculateAverages(resultDict,familySigDict):
+	familyAverages = {}
+	apkCount = 0
+
+	#print header
+	header = ""
+	header += "apk,"
+	for familyName in sorted(familySigDict.keys()):		
+		header += familyName+","
+	header = header [:-1]
+
+	csvString = header + "\n"	
+
+	#calculate counts and totals
+	for (apkFamily,familyDict) in resultDict.items():
+		#initialize family dictionary for averages
+		familyAverages.update({apkFamily:{}})
+		for (apkName,apkDict) in familyDict.items():
+			#each apk has a score for each signature
+			for (sigFamily,score) in apkDict.items():		
+				if sigFamily in familyAverages[apkFamily]:
+					familyAverages[apkFamily][sigFamily]["count"] += 1
+					familyAverages[apkFamily][sigFamily]["totalScore"] += score
+				else:
+					familyAverages[apkFamily].update({sigFamily:{"count":1,"totalScore":score,"averageScore":0}})
+
+	#calculate averages
+	for (apkFamily,sigAveDict) in sorted(familyAverages.items(),key=(lambda (name,dict): name)):
+		csvString += apkFamily + ","
+		for (sigFamily,aveDict) in sorted(sigAveDict.items(),key=(lambda (name,dict): name)):
+			count = familyAverages[apkFamily][sigFamily]["count"]
+			total = familyAverages[apkFamily][sigFamily]["totalScore"]
+			familyAverages[apkFamily][sigFamily]["averageScore"] = total / float(count)
+			csvString += str(familyAverages[apkFamily][sigFamily]["averageScore"]) + ","
+		csvString = csvString[:-1] + "\n"
+
+	#output csv
+	sigAveMatrix = open("sigAveMatrix.csv",'w')
+	sigAveMatrix.write(csvString)
+
+	#Print overall averages
+	#print header
+	header = "Family,IntraAverage,InterAverage"
+	csvString = header + "\n"
+
+	overInterCount = 0
+	overIntraCount = 0
+	overInterScore = 0
+	overIntraScore = 0	
+	for (apkFamily,sigAveDict) in sorted(familyAverages.items(),key=(lambda (name,dict): name)):
+		interCount = 0
+		intraCount = 0
+		interScore = 0
+		intraScore = 0
+		for (sigFamily,aveDict) in sorted(sigAveDict.items(),key=(lambda (name,dict): name)):
+			if sigFamily==apkFamily:
+				overIntraCount += familyAverages[apkFamily][sigFamily]["count"]
+				overIntraScore += familyAverages[apkFamily][sigFamily]["totalScore"]
+				intraCount += familyAverages[apkFamily][sigFamily]["count"]
+				intraScore += familyAverages[apkFamily][sigFamily]["totalScore"]
+			else:
+				overInterCount += familyAverages[apkFamily][sigFamily]["count"]
+				overInterScore += familyAverages[apkFamily][sigFamily]["totalScore"]
+				interCount += familyAverages[apkFamily][sigFamily]["count"]
+				interScore += familyAverages[apkFamily][sigFamily]["totalScore"]
+		intraAverage = intraScore / float(intraCount)
+		interAverage = interScore / float(interCount)
+		csvString += apkFamily+","+str(intraAverage)+","+str(interAverage)+"\n"
+	overIntraAverage = overIntraScore / float(overIntraCount)
+	overInterAverage = overInterScore / float(overInterCount)
+	csvString += "\n\nOverall," + str(overIntraAverage) + "," + str(overInterAverage)+"\n"
+
+	#output csv
+	ovAveMatrix = open("ovAveMatrix.csv",'w')
+	ovAveMatrix.write(csvString)
+			
+
 
 #creates an apk to signature matrix that should provide an intuitive
 #evaluation of our results.  We will need to tweak parameters until
@@ -192,13 +273,18 @@ def visualizeResults(resultDict,familySigDict):
 	print colorList
 	imageMatrix = []
 
-	csvString = header + "\n"
+	csvString = header + "\n"	
+
+	#for each family
 	for (apkFamily,familyDict) in sorted(resultDict.items(),key=(lambda (name,dict): name)):
 		familyNumber = sorted(resultDict.keys()).index(apkFamily)
+		#for each apk
 		for (apkName,apkDict) in sorted(familyDict.items(),key=(lambda (name,dict): name)):
+			#update count in family dictionary for averages
 			csvString += apkName + ","
 			imageRow = []
-			for (sigFamily,score) in sorted(apkDict.items(),key=(lambda (name,score): name)):
+			for (sigFamily,score) in sorted(apkDict.items(),key=(lambda (name,score): name)):		
+				#replication
 				for apk in (resultDict[sigFamily].keys()):
 					if sigFamily==apkFamily:
 						csvString += str(score) + ","
@@ -207,7 +293,7 @@ def visualizeResults(resultDict,familySigDict):
 						csvString += str(score) + ","
 						imageRow.append(brightness(score,falseColor))
 			csvString = csvString[:-1] + "\n"
-			imageMatrix.append(imageRow)			
+			imageMatrix.append(imageRow)
 
 	#create image with imageMatrix
 	size = (len(imageMatrix),len(imageMatrix[0]))
@@ -222,10 +308,6 @@ def visualizeResults(resultDict,familySigDict):
 	#output csv
 	sigSimMatrix = open("sigSimMatrix.csv",'w')
 	sigSimMatrix.write(csvString)
-
-	#TODO output csvString to a file
-	#TODO make colorful visualization of matrix
-	#TODO there is a problem in the replication that should make the matrix square
 
 #main
 if mode == "genSig":
