@@ -5,6 +5,8 @@
 #the argument "genSig" will generate signatures.
 #the argument "detectSig" will detect signatures.
 
+#toAnalyze needs to be filled with Modules
+
 mode=$1
 echo $mode
 
@@ -13,7 +15,7 @@ then
 	#serarate training from test set
 	rm testingSet/*
 	rm trainingSet/*
-	./scripts/sampleSegregator.py 70 "lucky"
+	./scripts/sampleSegregator.py 90 "lucky"
 fi
 
 #for train and test mode I must manually place the apks in the appropriate 
@@ -23,9 +25,7 @@ then
 	#generate signatures with training set
 	./scripts/clean.sh
 	rm familySignatures/*
-	cp trainingSet/* data/experimentData/pdg
-	echo "creating modules"
-	./scripts/runCreateModules.sh
+	cp trainingSet/* data/experimentData/modules
 	echo "detecting signatures"
 	./scripts/featureExtractor.py "genSig"
 fi 
@@ -34,9 +34,7 @@ if [ "$mode" == "test" ] || [ "$mode" == "all" ]
 then
 	#detect signatures in test set
 	./scripts/clean.sh
-	cp testingSet/* data/experimentData/pdg
-	echo "creating modules"
-	./scripts/runCreateModules.sh
+	cp testingSet/* data/experimentData/modules
 	echo "detecting signatures"
 	./scripts/featureExtractor.py "detectSig"
 fi
