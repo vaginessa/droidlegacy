@@ -34,9 +34,8 @@ if [ "$mode" == "test" ] || [ "$mode" == "all" ]
 then
 	#detect signatures in test set
 	./scripts/clean.sh
+	rm *.csv
 	cp testingSet/* data/experimentData/modules
 	echo "detecting signatures"
 	./scripts/featureExtractor.py "detectSig"
 fi
-
-cp *.png ~/Dropbox/

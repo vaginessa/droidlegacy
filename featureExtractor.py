@@ -261,8 +261,7 @@ def visualizeResults(resultDict,familySigDict):
 	header = ""
 	header += "apk,"
 	for familyName in sorted(familySigDict.keys()):
-		for apk in (resultDict[familyName].keys()):		
-			header += familyName+","
+		header += familyName+","
 	header = header [:-1]
 
 	#print data and produce image for evaluation
@@ -293,6 +292,11 @@ def visualizeResults(resultDict,familySigDict):
 			csvString = csvString[:-1] + "\n"
 			imageMatrix.append(imageRow)
 
+	#output csv
+	sigSimMatrix = open("sigSimMatrix.csv",'w')
+	sigSimMatrix.write(csvString)
+
+	"""
 	#create image with imageMatrix
 	size = (len(imageMatrix),len(imageMatrix[0]))
 	simImage = Image.new('RGB', size)
@@ -302,10 +306,7 @@ def visualizeResults(resultDict,familySigDict):
 			simImage.putpixel((col,row), (r,g,b))
 	simImage = simImage.resize((512,512))
 	simImage.save('myImage.png','PNG')
-
-	#output csv
-	sigSimMatrix = open("sigSimMatrix.csv",'w')
-	sigSimMatrix.write(csvString)
+	"""
 
 #main
 if mode == "genSig":
