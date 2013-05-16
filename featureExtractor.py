@@ -284,14 +284,12 @@ def visualizeResults(resultDict,familySigDict):
 			csvString += apkName + ","
 			imageRow = []
 			for (sigFamily,score) in sorted(apkDict.items(),key=(lambda (name,score): name)):		
-				#replication
-				for apk in (resultDict[sigFamily].keys()):
-					if sigFamily==apkFamily:
-						csvString += str(score) + ","
-						imageRow.append(brightness(score,colorList[familyNumber]))
-					else: #remember to dedicate a color to false positives such as red or white
-						csvString += str(score) + ","
-						imageRow.append(brightness(score,falseColor))
+				if sigFamily==apkFamily:
+					csvString += str(score) + ","
+					imageRow.append(brightness(score,colorList[familyNumber]))
+				else: #remember to dedicate a color to false positives such as red or white
+					csvString += str(score) + ","
+					imageRow.append(brightness(score,falseColor))
 			csvString = csvString[:-1] + "\n"
 			imageMatrix.append(imageRow)
 
