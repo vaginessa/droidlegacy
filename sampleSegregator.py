@@ -16,7 +16,7 @@ folds = 10
 
 #make dictionary of family names to apk names
 collection = {}
-for apkName in os.listdir("toAnalyze"):
+for apkName in sorted(os.listdir("toAnalyze")):
 	familyName = re.search('[^-]*',apkName).group(0)
 	if familyName in collection:
 		collection[familyName].append(apkName)
@@ -28,25 +28,26 @@ trainingList = []
 testingList = []
 for (familyName,apkList) in collection.items():
 	#break apkList into ten equal parts
-	#there is a problem with just rounding up chunkSize especially with small numbers
-	#consider 16 elements and a chunkSize of 16 / 10 with ceiling.  You get a size
-	#of 2 which runs out of elements before hitting 10 chunks...
 	
-	avg = len(apkList) / float(folds)
-	out = []
-	last = 0.0
-	while last < len(apkList):
-		out.append(apkList[int(last):int(last + avg)])
-		last += avg
-	chunks = out
+	chunks = [ apkList[i::folds] for i in xrange(folds) ]
 
+	toAddTest = []
+	toAddTrain = []
 	for i in range(folds):
 		toAdd = chunks[i]
-		print toAdd
 		if i+1 == fold:
-			testingList.extend(toAdd)
+			toAddTest.extend(toAdd)
 		else:
-			trainingList.extend(toAdd)
+			toAddTrain.extend(toAdd)
+
+	if (len(toAddTest) + len(toAddTrain)) != len(apkList):
+		print "Impossible training and/or testing size.  Check sampleSegregator"
+		print len(testingList)
+		print len(trainingList)
+		print len(apkList)
+
+	testingList.extend(toAddTest)
+	trainingList.extend(toAddTrain)
 	"""
 	#calculate how many apks from each family will be used for training or testing
 	trainingSize = int(len(apkList) * trainingPercent)
