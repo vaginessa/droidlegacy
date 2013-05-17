@@ -11,6 +11,7 @@ import Image
 #I have no idea what these thresholds should actually be.
 signatureThreshold = .5
 mode = sys.argv[1]
+fold = sys.argv[2]
 
 #returns jaccard similarity
 def calcSimilarity(set1,set2):
@@ -119,7 +120,7 @@ def generateSignatures():
 			if signatureScores[f] >= signatureThreshold:
 				signatureSet = signatureSet.union(set([f]))
 			
-		sigFile = open("familySignatures/" + family+".sig",'w')
+		sigFile = open("results/familySignatures_"+fold + "/" + family+".sig",'w')
 		for f in signatureSet:
 			sigFile.write(f+"\n")
 
@@ -129,9 +130,9 @@ def detectSignatures():
 	batchDictionary = extractFeatures(fileList)
 	#make a dictionary for malicious signatures
 	familySigDict = {}
-	for file in os.listdir("familySignatures/"):
+	for file in os.listdir("results/familySignatures_"+fold+"/"):
 		#this should create a dictionary from the file data and load it into signature
-		signature = set(open("familySignatures/"+file).read().strip().split("\n"))
+		signature = set(open("results/familySignatures_"+fold+"/"+file).read().strip().split("\n"))
 		familyName = re.search('[^\.]*',file).group(0)
 		familySigDict.update({familyName:signature})
 
@@ -212,7 +213,7 @@ def calculateAverages(resultDict,familySigDict):
 		csvString = csvString[:-1] + "\n"
 
 	#output csv
-	sigAveMatrix = open("sigAveMatrix.csv",'w')
+	sigAveMatrix = open("results/csvData_"+str(fold)+"/SigAveMatrix.csv",'w')
 	sigAveMatrix.write(csvString)
 
 	#Print overall averages
@@ -248,7 +249,7 @@ def calculateAverages(resultDict,familySigDict):
 	csvString += "\n\nOverall," + str(overIntraAverage) + "," + str(overInterAverage)+"\n"
 
 	#output csv
-	ovAveMatrix = open("ovAveMatrix.csv",'w')
+	ovAveMatrix = open("results/csvData_"+fold+"/ovAveMatrix.csv",'w')
 	ovAveMatrix.write(csvString)
 			
 
@@ -293,7 +294,7 @@ def visualizeResults(resultDict,familySigDict):
 			imageMatrix.append(imageRow)
 
 	#output csv
-	sigSimMatrix = open("sigSimMatrix.csv",'w')
+	sigSimMatrix = open("results/csvData_"+fold+"/sigSimMatrix.csv",'w')
 	sigSimMatrix.write(csvString)
 
 	"""
