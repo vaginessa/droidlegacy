@@ -84,6 +84,9 @@ def generateSignatures():
 		"for each apk"
 		familyDict = extractFeatures(collection[family])
 
+		#familyDict should contain the classList which is accesible at 
+		#the same level as featureSet on line 96
+
 		#Find common code among instances of a family
 		moduleToSimilarityScore = {}
 		#I need to compare one apk to the rest so I'm going to pop.  This will remove the popped element from familyDict
@@ -91,7 +94,8 @@ def generateSignatures():
 
 		for (chosenModuleKey,chosenModuleDict) in chosenApkDict.items():
 			chosenFeatureSet=chosenModuleDict["featureSet"]
-			moduleToSimilarityScore.update({chosenModuleKey:{'score':0,'matchList':[chosenFeatureSet]}})
+			chosenClassList=chosenModuleDict["classList"]
+			moduleToSimilarityScore.update({chosenModuleKey:{'score':0,'matchList':[chosenFeatureSet],'classList':[chosenClassList]}})
 			for apkDict in familyDict.values():
 				#compare the chosenFeature set to all the featureSets in each module of this apk and get the highest score found.
 				featureSetList = map ((lambda moduleDict: moduleDict["featureSet"]), apkDict.values()) 
@@ -104,6 +108,10 @@ def generateSignatures():
 
 		maxScoreKey,maxScoreDict = max(moduleToSimilarityScore.items(), key=(lambda (k,v): v['score']))
 		maxScoreSets = maxScoreDict['matchList']
+		maxScoreClassList = maxScoreDict['classList']
+
+		expFile = open("results/signatureExplanations_"+fold+"/"+family+".exp",'w')
+		expFile.write(str(maxScoreClassList))
 
 		signatureScores = {}
 		signatureSet = set()

@@ -6,5 +6,6 @@ It may have been cleaner to do all of this in Python, but it sort of evolved thi
 
 To run the experiment run ./scripts/main.sh
 
-Alec waz heer!
+The elf machine is for experimental modules.  I need to do package granularity modules when I get a chance.
 
+The undead machine is for updating scripts and working with class level coupling threshold 5 modules which seem to be working.
