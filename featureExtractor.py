@@ -111,6 +111,7 @@ def generateSignatures():
 		maxScoreClassList = maxScoreDict['classList']
 
 		expFile = open("results/signatureExplanations_"+fold+"/"+family+".exp",'w')
+		expFile.write("Apk used to create signature: " + chosenApkName + "\n")
 		expFile.write(str(maxScoreClassList))
 
 		signatureScores = {}
