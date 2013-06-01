@@ -39,6 +39,7 @@ do
 		./scripts/clean.sh
 		rm results/csvData_$fold/*
 		cp testingSet/* data/experimentData/modules
+		cp benignModules/* data/experimentData/modules
 		echo "detecting signatures fold: " $fold
 		./scripts/featureExtractor.py "detectSig" $fold
 	fi

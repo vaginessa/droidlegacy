@@ -33,7 +33,8 @@ def printSortedScores(moduleToSimilarityScore,chosenApkName,chosenApkDict):
 def extractFeatures(apkList):
 	batchDict = {}
 
-	for file in apkList:
+	for file in sorted(apkList):
+		print "extracting "+file
 		apkName = re.search('[^\.]*',file).group(0)
 		batchDict.update({apkName:{}})
 		apkData = open("data/experimentData/modules/"+file).read().strip()
@@ -146,13 +147,20 @@ def detectSignatures():
 		familySigDict.update({familyName:signature})
 
 	matchDict = {} #maps apks to their matchDict
-	for familyName in familySigDict.keys():
-		matchDict.update({familyName:{}})		
+	for familyName in familySigDict.keys(): #family names are listed here
+		matchDict.update({familyName:{}})
+	matchDict.update({"benign":{}})		
 
 	for (apkName,apkDict) in batchDictionary.items():
-		family = re.search('[^-]*',apkName).group(0)
+		print "detecting "+apkName
+		family = re.search('[^-]*',apkName).group(0) #this regular expression gets the family name but
+		if family not in matchDict:
+			family = "benign" #this will break if I get a malware family named benign
+			apkName = "benign"+apkName
+		#does not get the family for benign apps.  Where is the list of families created?
 		matchDict[family].update({apkName:{}}) #maps apks to max matches of modules for each signature.
-		for (familyName, signature) in familySigDict.items():
+		
+		for (familyName, signature) in familySigDict.items(): 
 			moduleScoreList = []
 			for (moduleName,moduleDict) in apkDict.items():
 				#I need to find the highest scoring module for this signature and add it to the dictionary
@@ -163,7 +171,6 @@ def detectSignatures():
 	visualizeResults(matchDict,familySigDict)
 	calculateAverages(matchDict,familySigDict)
 				 
-#TODO calculate intra and inter class similarity averages.
 
 def createColorList(falseColor):
 	colorList = []
@@ -250,6 +257,7 @@ def calculateAverages(resultDict,familySigDict):
 				overInterScore += familyAverages[apkFamily][sigFamily]["totalScore"]
 				interCount += familyAverages[apkFamily][sigFamily]["count"]
 				interScore += familyAverages[apkFamily][sigFamily]["totalScore"]
+
 		intraAverage = intraScore / float(intraCount)
 		interAverage = interScore / float(interCount)
 		csvString += apkFamily+","+str(intraAverage)+","+str(interAverage)+"\n"
@@ -290,7 +298,10 @@ def visualizeResults(resultDict,familySigDict):
 		#for each apk
 		for (apkName,apkDict) in sorted(familyDict.items(),key=(lambda (name,dict): name)):
 			#update count in family dictionary for averages
-			csvString += apkName + ","
+			if apkFamily in familySigDict:
+				csvString += apkName + ","
+			else: 
+				csvString += "benign" + apkName + ","
 			imageRow = []
 			for (sigFamily,score) in sorted(apkDict.items(),key=(lambda (name,score): name)):		
 				if sigFamily==apkFamily:

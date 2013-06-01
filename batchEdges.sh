@@ -11,7 +11,7 @@ rm -f data/pdg/*
 for apk in $apks
 do
 	#The raw edge results will be saved as a .raw file
-	rawEdgeFile=`echo $apk | sed s/".classes"/".raw"/`
+	rawEdgeFile=`echo $apk | sed s/"\.classes"/"\.raw"/`
 	#Create a list of all classes in the apk
 	classes=`ls data/flatClasses/$apk`
 	for class in $classes
