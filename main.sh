@@ -8,9 +8,10 @@
 #toAnalyze needs to be filled with Modules
 
 mode=$1
+folds=$2
 echo $mode
 
-for fold in {1..10}
+for ((fold=1;fold<=folds;fold++)) 
 do
 	if [ "$mode" == "all" ]
 	then

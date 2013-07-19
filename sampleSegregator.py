@@ -9,7 +9,7 @@ import numpy
 
 #trainingPercent = int(sys.argv[1]) / 100.0
 fold = int(sys.argv[1])
-folds = 10
+folds = 5
 #the second argument is the seed for random apk selection and should make experiment repeatable
 #hash lets me use anything as a seed including strings.
 #random.seed(hash(sys.argv[2]))

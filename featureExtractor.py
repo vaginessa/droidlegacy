@@ -232,6 +232,7 @@ def calculateAverages(resultDict,familySigDict):
 	sigAveMatrix = open("results/csvData_"+str(fold)+"/SigAveMatrix.csv",'w')
 	sigAveMatrix.write(csvString)
 
+	
 	#Print overall averages
 	#print header
 	header = "Family,IntraAverage,InterAverage"
@@ -315,6 +316,9 @@ def visualizeResults(resultDict,familySigDict):
 
 	#output csv
 	sigSimMatrix = open("results/csvData_"+fold+"/sigSimMatrix.csv",'w')
+	sigSimMatrix.write(csvString)
+	sigSimMatrix = open("vivek"+"/SigSimMatrix.csv",'a')
+	csvString=csvString[csvString.find("\n")+1:]#csvString[2:]	
 	sigSimMatrix.write(csvString)
 
 	"""

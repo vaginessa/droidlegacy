@@ -6,10 +6,6 @@ It may have been cleaner to do all of this in Python, but it sort of evolved thi
 
 To run the experiment run ./scripts/main.sh
 
-The elf machine is for experimental modules.  I need to do package granularity modules when I get a chance.
-
-The undead machine is for updating scripts and working with class level coupling threshold 5 modules which seem to be working.
-
 These are the steps to go from apk to module:
 	sanitize names - remove .- and spaces from name.  Also change end to -1.apk 
 		For example "mario-party v1.1" becomes "mariopartyv11-1.apk" this is closer to the AMGP format
