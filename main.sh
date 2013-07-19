@@ -18,7 +18,7 @@ do
 		#serarate training from test set
 		rm testingSet/*
 		rm trainingSet/*
-		./scripts/sampleSegregator.py $fold
+		./scripts/sampleSegregator.py $fold $folds
 	fi
 
 	#for train and test mode I must manually place the apks in the appropriate 

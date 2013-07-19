@@ -317,7 +317,7 @@ def visualizeResults(resultDict,familySigDict):
 	#output csv
 	sigSimMatrix = open("results/csvData_"+fold+"/sigSimMatrix.csv",'w')
 	sigSimMatrix.write(csvString)
-	sigSimMatrix = open("vivek"+"/SigSimMatrix.csv",'a')
+	sigSimMatrix = open("results"+"/SigSimMatrix.csv",'a')
 	csvString=csvString[csvString.find("\n")+1:]#csvString[2:]	
 	sigSimMatrix.write(csvString)
 
