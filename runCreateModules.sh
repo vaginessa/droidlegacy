@@ -10,17 +10,17 @@ do
 	moduleFileName=`echo $edgeList | sed s/".e.csv"/".m.csv"/`
 	#pass the edgeList as an argument to createModules.py and output the results to a module file
 
-      echo "`date` - start $edgeList"
-      date1=$(date +"%s")
+			echo "`date` - start $edgeList"
+			date1=$(date +"%s")
 
 	./scripts/createModules.py data/pdg/$edgeList > data/modules/$moduleFileName
 
-      echo "`date` - end $edgeList"
-      date2=$(date +"%s")
-      hours=$(($diff / 3600 ))
-      minutes1=$(($diff / 60 ))
-      minutes=$(($minutes1 % 60))
-      seconds=$(($diff % 60))
+			date2=$(date +"%s")
+			diff=$(($date2-$date1))
+			hours=$(($diff / 3600 ))
+			minutes1=$(($diff / 60 ))
+			minutes=$(($minutes1 % 60))
+			seconds=$(($diff % 60))
       echo "$edgeList time: $hours:$minutes:$seconds"
 
 

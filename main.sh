@@ -44,4 +44,5 @@ do
 		echo "detecting signatures fold: " $fold
 		./scripts/featureExtractor.py "detectSig" $fold
 	fi
+
 done

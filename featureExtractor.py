@@ -224,7 +224,10 @@ def calculateAverages(resultDict,familySigDict):
 		for (sigFamily,aveDict) in sorted(sigAveDict.items(),key=(lambda (name,dict): name)):
 			count = familyAverages[apkFamily][sigFamily]["count"]
 			total = familyAverages[apkFamily][sigFamily]["totalScore"]
-			familyAverages[apkFamily][sigFamily]["averageScore"] = total / float(count)
+			try:
+				familyAverages[apkFamily][sigFamily]["averageScore"] = total / float(count)
+			except ZeroDivisionError:
+				familyAverages[apkFamily][sigFamily]["averageScore"]=0
 			csvString += str(familyAverages[apkFamily][sigFamily]["averageScore"]) + ","
 		csvString = csvString[:-1] + "\n"
 
@@ -258,12 +261,23 @@ def calculateAverages(resultDict,familySigDict):
 				overInterScore += familyAverages[apkFamily][sigFamily]["totalScore"]
 				interCount += familyAverages[apkFamily][sigFamily]["count"]
 				interScore += familyAverages[apkFamily][sigFamily]["totalScore"]
-
-		intraAverage = intraScore / float(intraCount)
-		interAverage = interScore / float(interCount)
+		try:
+			intraAverage = intraScore / float(intraCount)
+		except ZeroDivisionError:
+			intraAverage = 0
+		try:
+			interAverage = interScore / float(interCount)
+		except ZeroDivisionError:
+			interAverage = 0
 		csvString += apkFamily+","+str(intraAverage)+","+str(interAverage)+"\n"
-	overIntraAverage = overIntraScore / float(overIntraCount)
-	overInterAverage = overInterScore / float(overInterCount)
+	try:	
+		overIntraAverage = overIntraScore / float(overIntraCount)
+	except ZeroDivisionError:
+		overIntraAverage =0
+	try:
+		overInterAverage = overInterScore / float(overInterCount)
+	except ZeroDivisionError:
+		overInterAverage = 0
 	csvString += "\n\nOverall," + str(overIntraAverage) + "," + str(overInterAverage)+"\n"
 
 	#output csv

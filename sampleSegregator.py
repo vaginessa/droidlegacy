@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #separates
 
+##vivek: Expects all malacious modules in "toAnalyze" directory and separates them into testing and training set and places in the respective directories.
+
 import os
 import re
 import sys
