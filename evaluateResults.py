@@ -12,7 +12,11 @@ inpfile=sys.argv[1]			#path to csv file
 #thresholds=sys.argv[2]		#threshold value
 
 def getmatrix(inpfile):
-	thresholds=[0.5,0.7,0.9]
+	thresholds=[0.5,0.6,0.7,0.8,0.9,0.98]
+	#print sc headers
+	print "thresholds used:"
+	print thresholds
+	print "\nfamilies detected:"
 	file=open(inpfile,"r")
 	#get list of all families
 	families=((file.readline()).strip()).split(",")
@@ -23,15 +27,19 @@ def getmatrix(inpfile):
 	x=0
 	for family in families:
 		print family	
-		sc[x]=[None]*5
+		sc[x]=[None]*10
 		sc[x][0]=family
-		sc[x][1]=[0]*y #tp
+		sc[x][1]=[0]*y	#tp
 		sc[x][2]=[0]*y	#tn
 		sc[x][3]=[0]*y	#fp
-		sc[x][4]=[0]*y #fn
+		sc[x][4]=[0]*y	#fn
+		sc[x][5]=[0]*y	#Precision
+		sc[x][6]=[0]*y	#recall
+		sc[x][7]=[0]*y	#TNR (true Negative Rate)
+		sc[x][8]=[0]*y	#Accuracy
+		sc[x][9]=[0]*y	#1- FPrate
 		x=x+1
-	#print sc
-	
+
 
 	lines=file.readlines()
 	#print "loop begins"
@@ -65,11 +73,78 @@ def getmatrix(inpfile):
 					t=t+1
 			x=x+1
 	
-	#print sc		
-	print "Printing the SC Matrix \n\n"
+	#CalculateStats....
+	x=0
+	for family in families:
+		t=0
+		for thresh in thresholds:
+			try:
+				sc[x][5][t]=(float(sc[x][1][t]))/(sc[x][1][t] + sc[x][3][t])
+			except ZeroDivisionError:
+				sc[x][5][t]=0
+			try:
+				sc[x][6][t]=float((sc[x][1][t]))/(sc[x][1][t] + sc[x][4][t])
+			except ZeroDivisionError:
+				sc[x][6][t]=0
+			try:
+				sc[x][7][t]=float((sc[x][2][t]))/(sc[x][2][t] + sc[x][3][t])	
+			except ZeroDivisionError:
+				sc[x][7][t]=0
+			try:
+				sc[x][8][t]=float((sc[x][1][t] + sc[x][2][t]))/(sc[x][1][t] + sc[x][2][t] + sc[x][3][t] + sc[x][4][t])		
+			except ZeroDivisionError:
+				sc[x][8][t]=0
+			try:
+				sc[x][9][t]=1- ( float((sc[x][3][t] ))/(sc[x][3][t] + sc[x][2][t] ))
+			except ZeroDivisionError:
+				sc[x][8][t]=0
+			t=t+1
+		x=x+1
+
+	#calculate overall stats		
+	y=len(thresholds)
+	totalTP=[0]*y
+	totalTN=[0]*y
+	totalFP=[0]*y
+	totalFN=[0]*y
+	Precision=[0.0]*y
+	Recall=[0.0]*y
+	TNR=[0.0]*y
+	Accuracy=[0.0]*y
+	FPR=[0.0]*y
+	for t in range(0,y):
+		for x in range(0,len(families)):
+			totalTP[t]=totalTP[t]+sc[x][1][t]
+			totalTN[t]=totalTN[t]+sc[x][2][t]
+			totalFP[t]=totalFP[t]+sc[x][3][t]
+			totalFN[t]=totalFN[t]+sc[x][4][t]
+	for t in range(0,y):	
+		try:
+			Precision[t]=float(totalTP[t])/(totalTP[t]+totalFP[t])
+		except ZeroDivisionError:
+			Precision[t]=0
+		try:
+			Recall[t]=float(totalTP[t])/(totalTP[t]+totalFN[t])
+		except ZeroDivisionError:
+			Recall[t]=0
+		try:
+			TNR[t]=float(totalTN[t])/(totalTN[t]+totalFP[t])
+		except ZeroDivisionError:
+			TNR[t]=0
+		try:
+			Accuracy[t]=float(totalTP[t]+totalTN[t])/(totalTP[t]+totalFP[t] + totalTN[t]+totalFN[t])
+		except ZeroDivisionError:
+			Accuracy[t]=0
+		try:
+			FPR[t]=1-float(totalFP[t])/(totalFP[t]+totalTN[t])	
+		except ZeroDivisionError:
+			FPR[t]=1
+
+	#print sc
+	print "\n\nPrinting the SC Matrix \n"
 	for x in range(0,len(families)):
 		print "\n"
-		for y in range(0,5):
+		for y in range(0,10):
 			if(y==1):
 				print "True Positives"
 			if(y==2):
@@ -77,12 +152,43 @@ def getmatrix(inpfile):
 			if(y==3):
 				print "False Positives"
 			if(y==4):
-				print "True Positives"			
+				print "False Negatives"			
+			if(y==5):
+				print "Precision (tp/(tp+fp))"			
+			if(y==6):
+				print "Recall (TPrate) (tp/(tp+fn))"			
+			if(y==7):
+				print "True Negative Rate (tn/(tn+fp))"			
+			if(y==8):
+				print "Accuracy ((tp+tn)/(tp+tn+fp+fn))"			
+			if(y==9):
+				print "1-FPrate (1- fp/(fp+tn))"			
 			print sc[x][y] 
 
-			
+	#print overall results
+	print "\nOverall Statistics\n"
+	print "True Positives"
+	print totalTP
+	print "True Negatives"
+	print totalTN
+	print "False Positives"
+	print totalFP
+	print "False Negatives"
+	print totalFN
+	print "Precision:"
+	print Precision
+	print "Recall		"
+	print Recall
+	print "True Negative Rate"
+	print TNR
+	print "Accuracy"
+	print Accuracy
+	print "1-False Positive Rate"
+	print FPR
+
 
 #main
+print "inputFile: "+ inpfile
 getmatrix(inpfile)
 
 
