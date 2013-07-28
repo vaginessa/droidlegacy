@@ -46,32 +46,33 @@ def getmatrix(inpfile):
 	for line in lines:
 		apkData=line.split(",")
 		apkFamily=re.search('[^-]*',apkData[0]).group(0)
-		apkData.remove(apkData[0])
-		x=0
-		for apkValue in apkData:
-			if(apkFamily==families[x]):
-				#case of TP/FN for families[x]
-				#print "case of tp/fn"
-				t=0				
-				for thresh in thresholds :
-					#print apkValue
-					if (thresh>=Decimal(apkValue)):
-						sc[x][4][t]=sc[x][4][t]+1
-						#print "case tp"
-					else:
-						sc[x][1][t]=sc[x][1][t]+1						
-					t=t+1
-			else:
-				#case of FP/TN for families[x]
-				#print "case of fp/tn"
-				t=0
-				for thresh in thresholds :
-					if (thresh>=Decimal(apkValue)):
-						sc[x][2][t]=sc[x][2][t]+1
-					else:
-						sc[x][3][t]=sc[x][3][t]+1						
-					t=t+1
-			x=x+1
+		if apkFamily in families: #skip benign
+			apkData.remove(apkData[0])
+			x=0
+			for apkValue in apkData:
+				if(apkFamily==families[x]):
+					#case of TP/FN for families[x]
+					#print "case of tp/fn"
+					t=0				
+					for thresh in thresholds :
+						#print apkValue
+						if (thresh>=Decimal(apkValue)):
+							sc[x][4][t]=sc[x][4][t]+1
+							#print "case tp"
+						else:
+							sc[x][1][t]=sc[x][1][t]+1						
+						t=t+1
+				else:
+					#case of FP/TN for families[x]
+					#print "case of fp/tn"
+					t=0
+					for thresh in thresholds :
+						if (thresh>=Decimal(apkValue)):
+							sc[x][2][t]=sc[x][2][t]+1
+						else:
+							sc[x][3][t]=sc[x][3][t]+1						
+						t=t+1
+				x=x+1
 	
 	#CalculateStats....
 	x=0
