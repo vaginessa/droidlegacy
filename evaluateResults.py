@@ -13,6 +13,12 @@ inpfile=sys.argv[1]			#path to csv file
 
 def getmatrix(inpfile):
 	thresholds=[0.5,0.6,0.7,0.8,0.9,0.98]
+	"""	
+	i=0.4
+	while(i<1.0):
+		i=i+0.02
+		thresholds.append(i)
+	"""	
 	#print sc headers
 	print "thresholds used:"
 	print thresholds
@@ -186,7 +192,21 @@ def getmatrix(inpfile):
 	print Accuracy
 	print "1-False Positive Rate"
 	print FPR
+	
+	print "\n\n creating PlotData file"
+	for x in range(0,len(families)):
+		if(x>0):
+			print "\n\n"
+		print "#family "+families[x]
+		for y in range(0,len(thresholds)):
+			print (str(thresholds[y]) + " " + str(sc[x][6][y]) + " " + str(1-sc[x][7][y]))
 
+	print "\n\n creating barData file family,TP,FN"
+	for x in range(0,len(families)):
+		print families[x] + " " + str(sc[x][1][2]) + " " + str(sc[x][4][2])
+	print "\n\n creating barData file family,TN,FP"
+	for x in range(0,len(families)):
+		print families[x] + " " + str(sc[x][2][2]) + " " + str(sc[x][3][2])
 
 #main
 print "inputFile: "+ inpfile
