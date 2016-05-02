@@ -22,5 +22,5 @@ do
 	#Create a directory for each apk replacing the .out extension with .classes.
 	#Also put them in the flatClasses directory 
 	classesName=data/flatClasses/`echo $dirName| sed s/.out/.classes/`;
-	mkdir $classesName; 
+	mkdir -p $classesName; 
 done
