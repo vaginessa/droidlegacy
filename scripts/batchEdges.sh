@@ -20,6 +20,7 @@
 #Eack apk should have a directory of classes in flatClasses/
 apks=`ls data/flatClasses/`
 #remove any previous files in the pdg directory
+mkdir -p data/pdg;
 rm -f data/pdg/*
 
 for apk in $apks

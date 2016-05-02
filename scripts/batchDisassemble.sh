@@ -1,3 +1,4 @@
+
 #Copyright 2013 Software Research Lab, University of Louisiana at Lafayette
 #
 #Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +20,7 @@
 #Create a list of all apk's in the apk directory
 apkList=`find data/apk/ -type f`;
 #Move to the disassemble directory
+mkdir -p data/disassembled;
 cd data/disassembled; 
 #For each apk
 for apkName in $apkList;
