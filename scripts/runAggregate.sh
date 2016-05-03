@@ -28,5 +28,5 @@ do
 	aggFileName=`echo $edgeList | sed s/"\.raw"/"\.e\.csv"/`
 	#pass the unfiltered edgeList and classList as arguments to aggregateEdges.py.
 	#Output the results to the .e.csv file
-	./scripts/aggregateEdges.py data/pdg/$edgeList data/classLists/$classListFile > data/pdg/$aggFileName
+	python scripts/aggregateEdges.py data/pdg/$edgeList data/classLists/$classListFile > data/pdg/$aggFileName
 done

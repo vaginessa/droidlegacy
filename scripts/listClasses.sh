@@ -16,6 +16,8 @@
 #Creates a list of classes present in the apk as they would appear in the edge list
 #This helps when removing edges to classes that aren't in the apk
 
+#Creating  output directory if not already exists
+mkdir -p data/classLists;
 #List all files in dirList that have the .out extension
 dirList=`ls data/flatClasses/ | grep '.classes'`;
 for dirName in $dirList;

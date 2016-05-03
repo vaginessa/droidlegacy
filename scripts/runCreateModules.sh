@@ -15,6 +15,8 @@
 #!/bin/bash
 #Helps automate the createModules.py script to run for multiple APKs
 
+#ensure output directory exists
+mkdir -p data/modules;
 #Make a list of the names of edgelists that were created by aggregateEdges.py
 edgeLists=`ls data/pdg/ | grep ".e.csv"`
 
@@ -27,7 +29,7 @@ do
 			echo "`date` - start $edgeList"
 			date1=$(date +"%s")
 
-	./scripts/createModules.py data/pdg/$edgeList > data/modules/$moduleFileName
+	python scripts/createModules.py data/pdg/$edgeList > data/modules/$moduleFileName
 
 			date2=$(date +"%s")
 			diff=$(($date2-$date1))
